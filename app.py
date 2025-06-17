@@ -24,6 +24,22 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
+@app.route("/user", methods = ["POST"])
+@login_required
+def create_user():
+     data = request.json
+     username = data.get("username")
+     password = data.get("password")
+
+     if username and password:
+          user = User(username = username, password = password )
+          db.session.add(user)
+          db.session.commit()
+
+          return jsonify({"message": " usuario cadastrado com sucesso"})
+     
+     return jsonify({"message": "dados invalidos "}), 400
+          
 
 @app.route ('/login', methods=["POST"])
 def login():
@@ -48,12 +64,63 @@ def login():
     return jsonify({"message": "credenciais invalidas"}), 400
 
 
-
 @app.route('/logout', methods=["GET"])
 @login_required
 def logout():
      logout_user()
      return jsonify({"message": " logout realizado cm sucesso"}) 
+
+@app.route("/user/<int:id_user>", methods =["GET"])
+@login_required
+def read_user(id_user):
+    user = User.query.get(id_user)
+
+    if user:
+         return jsonify({"username": user.username})
+    
+    return jsonify({"message": " Usuario nao encontrado"}),404
+
+
+@app.route("/user/<int:id_user>", methods =["PUT"])
+@login_required
+def update_user(id_user):
+    data = request.json
+    user = User.query.get(id_user)
+
+
+
+    if user and data.get("password") :
+        user.password = data.get("password")
+        db.session.commit()
+
+        return jsonify({"message": f" usuario {id_user} atualizado com sucesso"})
+    
+    
+    
+    return jsonify({"message": " Usuario nao encontrado"}),404
+    
+
+@app.route("/user/<int:id_user>", methods =["DELETE"])
+@login_required
+def delete_user(id_user):
+    user = User.query.get(id_user)
+    
+    
+    if  id_user == current_user.id:
+        return jsonify({"message": " deleçao nao permitida"}),403
+
+
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": f"Usuario{id_user} deletado com sucesso"})
+    
+        
+    return jsonify({"message": " Usuario nao encontrado"}),404
+ 
+         
+     
+     
 
 
 @app.route("/hello-world", methods=["GET"])
