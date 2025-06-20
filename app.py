@@ -7,7 +7,7 @@ from flask_login import LoginManager, login_user, current_user, logout_user, log
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "your_secret_key"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:admin123@127.0.0.1:3306/flask-crud'
 
 
 login_manager = LoginManager()
@@ -25,7 +25,7 @@ def load_user(user_id):
 
 
 @app.route("/user", methods = ["POST"])
-@login_required
+
 def create_user():
      data = request.json
      username = data.get("username")
