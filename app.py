@@ -87,6 +87,9 @@ def update_user(id_user):
     data = request.json
     user = User.query.get(id_user)
 
+    if id_user != current_user.id and current_user.role == "user":
+         return jsonify({"message": "Operaçao nao permitida"}), 403
+
 
 
     if user and data.get("password") :
@@ -105,6 +108,9 @@ def update_user(id_user):
 def delete_user(id_user):
     user = User.query.get(id_user)
     
+    if current_user.role != 'admin':
+         return jsonify({"message":"Operaçao nao permitida"}),403
+         
     
     if  id_user == current_user.id:
         return jsonify({"message": " deleçao nao permitida"}),403
